@@ -8,7 +8,7 @@ public class CarDao {
 
     static {
         cars = new Car[] {
-                new Car(UUID.fromString("33333333-3333-3333-3333-333333333333"), "ABC123", BigDecimal.valueOf(100L), Brand.AUDI, false)
+                new Car(UUID.fromString("11111111-1111-1111-1111-111111111111"), "ABC123", BigDecimal.valueOf(100L), Brand.AUDI, true)
         };
     }
 

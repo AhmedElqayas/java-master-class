@@ -13,15 +13,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CarBookingService {
-    private final UserDao userDao;
-    private final CarDao carDao;
-    private final CarBookingDao carBookingDao;
-
-    public CarBookingService(UserDao userDao, CarDao carDao, CarBookingDao carBookingDao) {
-        this.userDao = userDao;
-        this.carDao = carDao;
-        this.carBookingDao = carBookingDao;
-    }
+    private final UserDao userDao = new UserDao();
+    private final CarDao carDao = new CarDao();
+    private final CarBookingDao carBookingDao = new CarBookingDao();
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate endDate) {
         User user = userDao.findById(userId);
@@ -42,11 +36,8 @@ public class CarBookingService {
 
         CarBooking[] bookings = carBookingDao.findAll();
 
-        if (bookings == null)
-            throw new NoBookingsException("No bookings found.");
-
         for (CarBooking booking : bookings) {
-            if (booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId() == carId)
+            if (booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(carId))
                 throw new CarAlreadyBookedException("Car already booked by another user.");
         }
 
@@ -54,7 +45,7 @@ public class CarBookingService {
 
         BigDecimal totalPrice = car.getRentalPricePerDay().multiply(BigDecimal.valueOf(numberOfDays));
 
-        CarBooking booking = new CarBooking(UUID.fromString(""), user, car, startDate, endDate, totalPrice, BookingStatus.ACTIVE, LocalDateTime.now());
+        CarBooking booking = new CarBooking(UUID.randomUUID(), user, car, startDate, endDate, totalPrice, BookingStatus.ACTIVE, LocalDateTime.now());
 
         return carBookingDao.save(booking);
     }
@@ -73,7 +64,7 @@ public class CarBookingService {
         return carBookingDao.updateBooking(carBooking);
     }
 
-    public CarBooking[] viewUserBookings(UUID userId) {
+    public CarBooking[] getUserBookings(UUID userId) {
         User user = userDao.findById(userId);
 
         if (user == null) {
@@ -83,7 +74,16 @@ public class CarBookingService {
         return carBookingDao.findByUserId(userId);
     }
 
-    public CarBooking[] viewAllBookings() {
+    public CarBooking[] getAllBookings() {
         return carBookingDao.findAll();
+    }
+
+    public void getUserBookedCars(UUID userId) {
+        for (CarBooking booking : getUserBookings(userId)) {
+            if (booking.getBookingStatus().equals(BookingStatus.ACTIVE))
+                System.out.println(booking.getCar());
+            else
+                System.out.println("No booked cars for this user");
+        }
     }
 }

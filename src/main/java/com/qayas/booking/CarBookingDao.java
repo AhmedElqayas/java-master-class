@@ -14,11 +14,12 @@ public class CarBookingDao {
     private static int bookingCount = 0;
 
     public CarBooking[] findAll() {
-        CarBooking[] allBookings = new CarBooking[bookingCount];
+        //I created another array to remove null records from the bookings and return only actual ones
+        CarBooking[] result = new CarBooking[bookingCount];
         for (int i = 0; i < bookingCount; i++) {
-            allBookings[i] = carBookings[i];
+            result[i] = carBookings[i];
         }
-        return allBookings;
+        return result;
     }
 
     public CarBooking save(CarBooking booking) {
@@ -50,7 +51,7 @@ public class CarBookingDao {
 
     public CarBooking[] findByUserId(UUID userId) {
         int matchingBookings = 0;
-        for (CarBooking booking : carBookings) {
+        for (CarBooking booking : findAll()) {
             if (booking.getUser().getId().equals(userId))
                 matchingBookings++;
         }
@@ -68,7 +69,7 @@ public class CarBookingDao {
 
     public CarBooking[] findActiveBookings() {
         int matchingBookings = 0;
-        for (CarBooking booking : carBookings) {
+        for (CarBooking booking : findAll()) {
             if (booking.getBookingStatus() == BookingStatus.ACTIVE)
                 matchingBookings++;
         }

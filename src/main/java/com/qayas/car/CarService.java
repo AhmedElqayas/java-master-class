@@ -1,19 +1,13 @@
 package com.qayas.car;
 
-import com.qayas.booking.BookingStatus;
 import com.qayas.booking.CarBooking;
 import com.qayas.booking.CarBookingDao;
 
 public class CarService {
-    private CarDao carDao;
-    private CarBookingDao carBookingDao;
+    private final CarDao carDao = new CarDao();
+    private final CarBookingDao carBookingDao = new CarBookingDao();
 
-    public CarService(CarDao carDao, CarBookingDao carBookingDao) {
-        this.carDao = carDao;
-        this.carBookingDao = carBookingDao;
-    }
-
-    public Car[] viewAvailableCars() {
+    public Car[] getAvailableCars() {
         CarBooking[] activeBookings = carBookingDao.findActiveBookings();
         Car[] allCars = carDao.findAll();
 
@@ -38,8 +32,8 @@ public class CarService {
         return availableCars;
     }
 
-    public Car[] viewAvailableElectricCars() {
-        Car[] availableCars = viewAvailableCars();
+    public Car[] getAvailableElectricCars() {
+        Car[] availableCars = getAvailableCars();
         int electricCarsCount = 0;
 
         for (Car car : availableCars) {

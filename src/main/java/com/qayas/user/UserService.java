@@ -1,13 +1,9 @@
 package com.qayas.user;
 
 public class UserService {
-    private UserDao userDao;
+    private final UserDao userDao = new UserDao();
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    public User[] viewAllUsers() {
+    public User[] getAllUsers() {
         return userDao.findAll();
     }
 }
