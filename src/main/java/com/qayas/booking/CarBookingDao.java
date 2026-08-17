@@ -16,7 +16,10 @@ public class CarBookingDao {
     public CarBooking[] findAll() {
         //I created another array to remove null records from the bookings and return only actual ones
         CarBooking[] result = new CarBooking[bookingCount];
+
         for (int i = 0; i < bookingCount; i++) {
+            if (carBookings[i] == null)
+                break;
             result[i] = carBookings[i];
         }
         return result;
