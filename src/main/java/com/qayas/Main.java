@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Main {
     private static final CarDao carDao = new CarArrayDataAccessService();
     private static final UserDao userDao = new UserArrayDataAccessService();
-    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("C:\\Users\\ahmed.elqayas\\OneDrive - Pegasus TransTech\\Documents\\My folder\\Amigos code\\bookings.txt");
+    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("bookings.txt");
     private static final CarService carService = new CarService(carBookingDao, carDao);
     private static final UserService userService = new UserService(userDao);
     private static final CarBookingService carBookingService = new CarBookingService(carBookingDao, carDao);
