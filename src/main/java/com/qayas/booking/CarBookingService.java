@@ -5,6 +5,7 @@ import com.qayas.car.Car;
 import com.qayas.car.CarDao;
 import com.qayas.user.User;
 import com.qayas.user.UserArrayDataAccessService;
+import com.qayas.user.UserDao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,12 +14,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CarBookingService {
-    private final UserArrayDataAccessService userDao = new UserArrayDataAccessService();
+    private final UserDao userDao;
     private final CarBookingDao carBookingDao;
     private final CarDao carDao;
-    public CarBookingService(CarBookingDao carBookingDao, CarDao carDao) {
+    public CarBookingService(CarBookingDao carBookingDao, CarDao carDao, UserDao userDao) {
         this.carBookingDao = carBookingDao;
         this.carDao = carDao;
+        this.userDao = userDao;
     }
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate endDate) {

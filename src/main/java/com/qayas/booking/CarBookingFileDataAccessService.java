@@ -114,7 +114,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
         //Deserialization
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
             return (CarBooking[]) in.readObject();
-        } catch (EOFException e) {
+        } catch (FileNotFoundException e) {
             return new CarBooking[0];
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

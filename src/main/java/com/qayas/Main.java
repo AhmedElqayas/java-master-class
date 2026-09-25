@@ -24,7 +24,7 @@ public class Main {
     private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("bookings.txt");
     private static final CarService carService = new CarService(carBookingDao, carDao);
     private static final UserService userService = new UserService(userDao);
-    private static final CarBookingService carBookingService = new CarBookingService(carBookingDao, carDao);
+    private static final CarBookingService carBookingService = new CarBookingService(carBookingDao, carDao, userDao);
 
     public static void main(String[] args) {
         System.out.println("""
