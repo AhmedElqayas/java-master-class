@@ -4,6 +4,7 @@ import com.qayas.Exceptions.*;
 import com.qayas.car.Car;
 import com.qayas.car.CarDao;
 import com.qayas.user.User;
+import com.qayas.user.UserArrayDataAccessService;
 import com.qayas.user.UserDao;
 
 import java.math.BigDecimal;
@@ -13,17 +14,22 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CarBookingService {
-    private final UserDao userDao = new UserDao();
-    private final CarDao carDao = new CarDao();
-    private final CarBookingDao carBookingDao = new CarBookingDao();
+    private final UserDao userDao;
+    private final CarBookingDao carBookingDao;
+    private final CarDao carDao;
+    public CarBookingService(CarBookingDao carBookingDao, CarDao carDao, UserDao userDao) {
+        this.carBookingDao = carBookingDao;
+        this.carDao = carDao;
+        this.userDao = userDao;
+    }
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate endDate) {
-        User user = userDao.findById(userId);
+        User user = userDao.getUserById(userId);
 
         if (user == null)
             throw new UserNotFoundException(userId);
 
-        Car car = carDao.findById(carId);
+        Car car = carDao.getCarById(carId);
 
         if (car == null)
             throw new CarNotFoundException(carId);
@@ -34,7 +40,7 @@ public class CarBookingService {
         if (!endDate.isAfter(startDate))
             throw new IllegalArgumentException("End date must be after start date.");
 
-        CarBooking[] bookings = carBookingDao.findAll();
+        CarBooking[] bookings = carBookingDao.getBookings();
 
         for (CarBooking booking : bookings) {
             if (booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(carId))
@@ -47,11 +53,11 @@ public class CarBookingService {
 
         CarBooking booking = new CarBooking(UUID.randomUUID(), user, car, startDate, endDate, totalPrice, BookingStatus.ACTIVE, LocalDateTime.now());
 
-        return carBookingDao.save(booking);
+        return carBookingDao.saveBooking(booking);
     }
 
     public CarBooking cancelBooking(UUID bookingId) {
-        CarBooking carBooking = carBookingDao.findById(bookingId);
+        CarBooking carBooking = carBookingDao.getBookingById(bookingId);
 
         if (carBooking == null)
             throw new BookingNotFoundException(bookingId);
@@ -65,25 +71,28 @@ public class CarBookingService {
     }
 
     public CarBooking[] getUserBookings(UUID userId) {
-        User user = userDao.findById(userId);
+        User user = userDao.getUserById(userId);
 
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
 
-        return carBookingDao.findByUserId(userId);
+        return carBookingDao.getBookingByUserId(userId);
     }
 
     public CarBooking[] getAllBookings() {
-        return carBookingDao.findAll();
+        return carBookingDao.getBookings();
     }
 
     public void getUserBookedCars(UUID userId) {
+        int activeBookingsForUser = 0;
         for (CarBooking booking : getUserBookings(userId)) {
-            if (booking.getBookingStatus().equals(BookingStatus.ACTIVE))
+            if (booking.getBookingStatus().equals(BookingStatus.ACTIVE)) {
                 System.out.println(booking.getCar());
-            else
-                System.out.println("No booked cars for this user");
+                activeBookingsForUser ++;
+            }
         }
+        if (activeBookingsForUser == 0)
+            System.out.println("No booked cars for this user");
     }
 }

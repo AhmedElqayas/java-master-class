@@ -4,12 +4,16 @@ import com.qayas.booking.CarBooking;
 import com.qayas.booking.CarBookingDao;
 
 public class CarService {
-    private final CarDao carDao = new CarDao();
-    private final CarBookingDao carBookingDao = new CarBookingDao();
+    private final CarBookingDao carBookingDao;
+    private final CarDao carDao;
+    public CarService(CarBookingDao carBookingDao, CarDao carDao) {
+        this.carBookingDao = carBookingDao;
+        this.carDao = carDao;
+    }
 
     public Car[] getAvailableCars() {
-        CarBooking[] activeBookings = carBookingDao.findActiveBookings();
-        Car[] allCars = carDao.findAll();
+        CarBooking[] activeBookings = carBookingDao.getActiveBookings();
+        Car[] allCars = carDao.getCars();
 
         int availableCarsCount = allCars.length - activeBookings.length;
         Car[] availableCars = new Car[availableCarsCount];

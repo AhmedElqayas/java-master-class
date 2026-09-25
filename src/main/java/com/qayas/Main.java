@@ -3,11 +3,14 @@ package com.qayas;
 // TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
 // TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
 
-import com.qayas.booking.CarBooking;
-import com.qayas.booking.CarBookingService;
+import com.qayas.booking.*;
 import com.qayas.car.Car;
+import com.qayas.car.CarArrayDataAccessService;
+import com.qayas.car.CarDao;
 import com.qayas.car.CarService;
 import com.qayas.user.User;
+import com.qayas.user.UserArrayDataAccessService;
+import com.qayas.user.UserDao;
 import com.qayas.user.UserService;
 
 import java.time.LocalDate;
@@ -16,9 +19,12 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
-    private static final CarBookingService carBookingService = new CarBookingService();
-    private static final CarService carService = new CarService();
-    private static final UserService userService = new UserService();
+    private static final CarDao carDao = new CarArrayDataAccessService();
+    private static final UserDao userDao = new UserArrayDataAccessService();
+    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("bookings.txt");
+    private static final CarService carService = new CarService(carBookingDao, carDao);
+    private static final UserService userService = new UserService(userDao);
+    private static final CarBookingService carBookingService = new CarBookingService(carBookingDao, carDao, userDao);
 
     public static void main(String[] args) {
         System.out.println("""
