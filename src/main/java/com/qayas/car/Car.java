@@ -1,9 +1,10 @@
 package com.qayas.car;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class Car {
+public class Car implements Serializable {
     private final UUID id;
     private final String regNumber;
     private final BigDecimal rentalPricePerDay;

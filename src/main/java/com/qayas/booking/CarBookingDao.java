@@ -1,90 +1,13 @@
 package com.qayas.booking;
 
-import com.qayas.Exceptions.BookingNotFoundException;
-
 import java.util.UUID;
 
-public class CarBookingDao {
-    private static final CarBooking[] carBookings;
+public interface CarBookingDao {
+    CarBooking[] getBookings();
+    CarBooking getBookingById(UUID bookingId);
+    CarBooking[] getBookingByUserId(UUID userId);
+    CarBooking[] getActiveBookings();
+    CarBooking saveBooking(CarBooking booking);
+    CarBooking updateBooking(CarBooking booking);
 
-    static {
-        carBookings = new CarBooking[100];
-    }
-
-    private static int bookingCount = 0;
-
-    public CarBooking[] findAll() {
-        //I created another array to remove null records from the bookings and return only actual ones
-        CarBooking[] result = new CarBooking[bookingCount];
-
-        for (int i = 0; i < bookingCount; i++) {
-            if (carBookings[i] == null)
-                break;
-            result[i] = carBookings[i];
-        }
-        return result;
-    }
-
-    public CarBooking save(CarBooking booking) {
-        if (bookingCount >= carBookings.length)
-            throw new IllegalStateException("Booking storage is full.");
-
-        carBookings[bookingCount++] = booking;
-
-        return booking;
-    }
-
-    public CarBooking findById(UUID bookingId) {
-        for (CarBooking booking : carBookings) {
-            if (booking.getId().equals(bookingId))
-                return booking;
-        }
-        return null;
-    }
-
-    public CarBooking updateBooking(CarBooking booking) {
-        for (int i = 0; i < bookingCount; i++) {
-            if (carBookings[i].getId().equals(booking.getId())) {
-                carBookings[i] = booking;
-                return booking;
-            }
-        }
-        throw new BookingNotFoundException(booking.getId());
-    }
-
-    public CarBooking[] findByUserId(UUID userId) {
-        int matchingBookings = 0;
-        for (CarBooking booking : findAll()) {
-            if (booking.getUser().getId().equals(userId))
-                matchingBookings++;
-        }
-
-        CarBooking[] userBookings = new CarBooking[matchingBookings];
-        int index = 0;
-
-        for (int i = 0; i < bookingCount; i++) {
-            if (carBookings[i].getUser().getId().equals(userId)) {
-                userBookings[index++] = carBookings[i];
-            }
-        }
-        return userBookings;
-    }
-
-    public CarBooking[] findActiveBookings() {
-        int matchingBookings = 0;
-        for (CarBooking booking : findAll()) {
-            if (booking.getBookingStatus() == BookingStatus.ACTIVE)
-                matchingBookings++;
-        }
-
-        CarBooking[] activeBookings = new CarBooking[matchingBookings];
-        int index = 0;
-
-        for (int i = 0; i < bookingCount; i++) {
-            if (carBookings[i].getBookingStatus() == BookingStatus.ACTIVE) {
-                activeBookings[index++] = carBookings[i];
-            }
-        }
-        return activeBookings;
-    }
 }
