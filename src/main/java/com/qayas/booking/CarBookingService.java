@@ -4,19 +4,20 @@ import com.qayas.Exceptions.*;
 import com.qayas.car.Car;
 import com.qayas.car.CarDao;
 import com.qayas.user.User;
-import com.qayas.user.UserArrayDataAccessService;
 import com.qayas.user.UserDao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 public class CarBookingService {
     private final UserDao userDao;
     private final CarBookingDao carBookingDao;
     private final CarDao carDao;
+
     public CarBookingService(CarBookingDao carBookingDao, CarDao carDao, UserDao userDao) {
         this.carBookingDao = carBookingDao;
         this.carDao = carDao;
@@ -40,7 +41,7 @@ public class CarBookingService {
         if (!endDate.isAfter(startDate))
             throw new IllegalArgumentException("End date must be after start date.");
 
-        CarBooking[] bookings = carBookingDao.getBookings();
+        List<CarBooking> bookings = carBookingDao.getBookings();
 
         for (CarBooking booking : bookings) {
             if (booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(carId))
@@ -70,7 +71,7 @@ public class CarBookingService {
         return carBookingDao.updateBooking(carBooking);
     }
 
-    public CarBooking[] getUserBookings(UUID userId) {
+    public List<CarBooking> getUserBookings(UUID userId) {
         User user = userDao.getUserById(userId);
 
         if (user == null) {
@@ -80,7 +81,7 @@ public class CarBookingService {
         return carBookingDao.getBookingByUserId(userId);
     }
 
-    public CarBooking[] getAllBookings() {
+    public List<CarBooking> getAllBookings() {
         return carBookingDao.getBookings();
     }
 
@@ -89,7 +90,7 @@ public class CarBookingService {
         for (CarBooking booking : getUserBookings(userId)) {
             if (booking.getBookingStatus().equals(BookingStatus.ACTIVE)) {
                 System.out.println(booking.getCar());
-                activeBookingsForUser ++;
+                activeBookingsForUser++;
             }
         }
         if (activeBookingsForUser == 0)
