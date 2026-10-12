@@ -11,8 +11,6 @@ public class CarBookingListDataAccessService implements CarBookingDao {
     private static final List<CarBooking> carBookings = new ArrayList<>();
 
     public List<CarBooking> getBookings() {
-        if (carBookings.isEmpty())
-            return Collections.emptyList();
         return carBookings;
     }
 
@@ -21,10 +19,10 @@ public class CarBookingListDataAccessService implements CarBookingDao {
             if (booking.getId().equals(bookingId))
                 return booking;
         }
-        return null;
+        throw new BookingNotFoundException(bookingId);
     }
 
-    public List<CarBooking> getBookingByUserId(UUID userId) {
+    public List<CarBooking> getBookingsByUserId(UUID userId) {
         List<CarBooking> userBookings = new ArrayList<>();
         for (CarBooking booking : getBookings()) {
             if (booking.getUser().getId().equals(userId))
@@ -48,10 +46,10 @@ public class CarBookingListDataAccessService implements CarBookingDao {
     }
 
     public CarBooking updateBooking(CarBooking updatedBooking) {
-        for (CarBooking booking : getBookings()) {
-            if (booking.getId().equals(updatedBooking.getId())) {
-                booking = updatedBooking;
-                return booking;
+        for (int i = 0; i < carBookings.size(); i++) {
+            if (carBookings.get(i).getId().equals(updatedBooking.getId())) {
+                carBookings.set(i, updatedBooking);
+                return updatedBooking;
             }
         }
         throw new BookingNotFoundException(updatedBooking.getId());

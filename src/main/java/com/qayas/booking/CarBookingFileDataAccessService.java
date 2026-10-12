@@ -4,7 +4,6 @@ import com.qayas.Exceptions.BookingNotFoundException;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +30,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     }
 
     @Override
-    public List<CarBooking> getBookingByUserId(UUID userId) {
+    public List<CarBooking> getBookingsByUserId(UUID userId) {
         List<CarBooking> carBookings = getBookingsFromFile();
 
         List<CarBooking> userBookings = new ArrayList<>();
@@ -99,8 +98,10 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
         //Deserialization
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
             return (List<CarBooking>) in.readObject();
+        } catch (FileNotFoundException e) {
+          return new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
-            return new ArrayList<>();
+            throw new RuntimeException(e);
         }
     }
 }

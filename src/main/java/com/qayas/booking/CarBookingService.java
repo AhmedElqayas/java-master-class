@@ -78,7 +78,7 @@ public class CarBookingService {
             throw new UserNotFoundException(userId);
         }
 
-        return carBookingDao.getBookingByUserId(userId);
+        return carBookingDao.getBookingsByUserId(userId);
     }
 
     public List<CarBooking> getAllBookings() {
