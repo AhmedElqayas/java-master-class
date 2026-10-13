@@ -1,8 +1,9 @@
 package com.qayas.car;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CarDao {
-    Car[] getCars();
+    List<Car> getCars();
     Car getCarById(UUID carId);
 }

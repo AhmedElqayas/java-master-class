@@ -1,5 +1,7 @@
 package com.qayas.user;
 
+import java.util.List;
+
 public class UserService {
     private final UserDao userDao;
 
@@ -7,7 +9,7 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public User[] getAllUsers() {
+    public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }
 }

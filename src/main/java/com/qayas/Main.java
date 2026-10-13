@@ -5,23 +5,24 @@ package com.qayas;
 
 import com.qayas.booking.*;
 import com.qayas.car.Car;
-import com.qayas.car.CarArrayDataAccessService;
+import com.qayas.car.CarListDataAccessService;
 import com.qayas.car.CarDao;
 import com.qayas.car.CarService;
 import com.qayas.user.User;
-import com.qayas.user.UserArrayDataAccessService;
+import com.qayas.user.UserListDataAccessService;
 import com.qayas.user.UserDao;
 import com.qayas.user.UserService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
-    private static final CarDao carDao = new CarArrayDataAccessService();
-    private static final UserDao userDao = new UserArrayDataAccessService();
-    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("bookings.txt");
+    private static final CarDao carDao = new CarListDataAccessService();
+    private static final UserDao userDao = new UserListDataAccessService();
+    private static final CarBookingDao carBookingDao = new CarBookingListDataAccessService();
     private static final CarService carService = new CarService(carBookingDao, carDao);
     private static final UserService userService = new UserService(userDao);
     private static final CarBookingService carBookingService = new CarBookingService(carBookingDao, carDao, userDao);
@@ -90,9 +91,9 @@ public class Main {
                 case 5 -> {
                     System.out.println("Available Cars: ");
 
-                    Car[] availableCars = carService.getAvailableCars();
+                    List<Car> availableCars = carService.getAvailableCars();
 
-                    if (availableCars.length == 0)
+                    if (availableCars.isEmpty())
                         System.out.println("No available cars.");
 
                     for (Car car : availableCars) {
@@ -103,9 +104,9 @@ public class Main {
                 case 6 -> {
                     System.out.println("Available electric Cars: ");
 
-                    Car[] availableElectricCars = carService.getAvailableElectricCars();
+                    List<Car> availableElectricCars = carService.getAvailableElectricCars();
 
-                    if (availableElectricCars.length == 0)
+                    if (availableElectricCars.isEmpty())
                         System.out.println("No available electric cars.");
 
                     for (Car car : availableElectricCars) {
