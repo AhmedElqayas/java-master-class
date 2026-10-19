@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CarBookingService {
     private final UserDao userDao;
@@ -43,9 +44,9 @@ public class CarBookingService {
 
         List<CarBooking> bookings = carBookingDao.getBookings();
 
-        for (CarBooking booking : bookings) {
-            if (booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(carId))
-                throw new CarAlreadyBookedException("Car already booked by another user.");
+        if (bookings.stream()
+                .anyMatch(booking -> booking.getBookingStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(carId))) {
+            throw new CarAlreadyBookedException("Car already booked by another user.");
         }
 
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
@@ -86,14 +87,13 @@ public class CarBookingService {
     }
 
     public void getUserBookedCars(UUID userId) {
-        int activeBookingsForUser = 0;
-        for (CarBooking booking : getUserBookings(userId)) {
-            if (booking.getBookingStatus().equals(BookingStatus.ACTIVE)) {
-                System.out.println(booking.getCar());
-                activeBookingsForUser++;
-            }
-        }
-        if (activeBookingsForUser == 0)
+        List<Car> activeBookingsForUser = getUserBookings(userId).stream()
+                .filter(booking -> booking.getBookingStatus().equals(BookingStatus.ACTIVE))
+                .map(CarBooking::getCar)
+                .toList();
+        if (activeBookingsForUser.isEmpty())
             System.out.println("No booked cars for this user");
+
+        activeBookingsForUser.forEach(System.out::println);
     }
 }

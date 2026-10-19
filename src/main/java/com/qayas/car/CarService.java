@@ -19,35 +19,19 @@ public class CarService {
         List<CarBooking> activeBookings = carBookingDao.getActiveBookings();
         List<Car> allCars = carDao.getCars();
 
-        List<Car> availableCars = new ArrayList<>();
+        return allCars.stream()
+                .filter(car ->
+                        activeBookings.stream()
+                                .noneMatch(activeBooking -> car.getId().equals(activeBooking.getCar().getId())))
+                .toList();
 
-        for (Car car : allCars) {
-            boolean isBooked = false;
-
-            for (CarBooking activeBooking : activeBookings) {
-                if (car.getId().equals(activeBooking.getCar().getId())) {
-                    isBooked = true;
-                    break;
-                }
-            }
-            if (!isBooked) {
-                availableCars.add(car);
-            }
-        }
-
-        return availableCars;
     }
 
     public List<Car> getAvailableElectricCars() {
         List<Car> availableCars = getAvailableCars();
-        List<Car> availableElectricCars = new ArrayList<>();
 
-        for (Car car : availableCars) {
-            if (car.isElectric()) {
-                availableElectricCars.add(car);
-            }
-        }
-
-        return availableElectricCars;
+        return availableCars.stream()
+                .filter(Car::isElectric)
+                .toList();
     }
 }

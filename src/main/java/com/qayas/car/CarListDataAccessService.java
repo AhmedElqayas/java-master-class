@@ -1,5 +1,7 @@
 package com.qayas.car;
 
+import com.qayas.Exceptions.CarNotFoundException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +19,9 @@ public class CarListDataAccessService implements CarDao {
     }
 
     public Car getCarById(UUID carId) {
-        for (Car car : cars) {
-            if (car.getId().equals(carId))
-                return car;
-        }
-        return null;
+        return cars.stream()
+                .filter(car -> car.getId().equals(carId))
+                .findFirst()
+                .orElseThrow(() -> new CarNotFoundException(carId));
     }
 }
