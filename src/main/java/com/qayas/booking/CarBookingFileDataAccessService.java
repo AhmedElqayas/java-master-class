@@ -33,14 +33,14 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     public List<CarBooking> getBookingsByUserId(UUID userId) {
         return getBookingsFromFile().stream()
                 .filter(booking -> booking.getUser().getId().equals(userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public List<CarBooking>  getActiveBookings() {
+    public List<CarBooking> getActiveBookings() {
         return getBookingsFromFile().stream()
                 .filter(booking -> booking.getBookingStatus() == BookingStatus.ACTIVE)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -54,15 +54,13 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     public CarBooking updateBooking(CarBooking updatedBooking) {
         List<CarBooking> carBookings = getBookingsFromFile();
 
-        IntStream.range(0, carBookings.size())
+        int index = IntStream.range(0, carBookings.size())
                 .filter(i -> carBookings.get(i).getId().equals(updatedBooking.getId()))
                 .findFirst()
-                .ifPresentOrElse(
-                        i -> carBookings.set(i, updatedBooking),
-                        () -> {
-                            throw new BookingNotFoundException(updatedBooking.getId());
-                        }
-                );
+                .orElseThrow(() -> new BookingNotFoundException(updatedBooking.getId()));
+
+        carBookings.set(index, updatedBooking);
+
         saveBookingsToFile(carBookings);
         return updatedBooking;
     }
@@ -87,7 +85,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
             return (List<CarBooking>) in.readObject();
         } catch (FileNotFoundException e) {
-          return new ArrayList<>();
+            return new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -26,13 +26,13 @@ public class CarBookingListDataAccessService implements CarBookingDao {
     public List<CarBooking> getBookingsByUserId(UUID userId) {
         return carBookings.stream()
                 .filter(booking -> booking.getUser().getId().equals(userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<CarBooking> getActiveBookings() {
         return carBookings.stream()
                 .filter(booking -> booking.getBookingStatus() == BookingStatus.ACTIVE)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CarBooking saveBooking(CarBooking booking) {
@@ -41,15 +41,13 @@ public class CarBookingListDataAccessService implements CarBookingDao {
     }
 
     public CarBooking updateBooking(CarBooking updatedBooking) {
-        IntStream.range(0, carBookings.size())
+        int index = IntStream.range(0, carBookings.size())
                 .filter(i -> carBookings.get(i).getId().equals(updatedBooking.getId()))
                 .findFirst()
-                .ifPresentOrElse(
-                        i -> carBookings.set(i, updatedBooking),
-                        () -> {
-                            throw new BookingNotFoundException(updatedBooking.getId());
-                        }
-                );
+                .orElseThrow(() -> new BookingNotFoundException(updatedBooking.getId()));
+
+        carBookings.set(index, updatedBooking);
+
         return updatedBooking;
     }
 }

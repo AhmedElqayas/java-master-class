@@ -28,13 +28,7 @@ public class CarBookingService {
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate endDate) {
         User user = userDao.getUserById(userId);
 
-        if (user == null)
-            throw new UserNotFoundException(userId);
-
         Car car = carDao.getCarById(carId);
-
-        if (car == null)
-            throw new CarNotFoundException(carId);
 
         if (startDate.isBefore(LocalDate.now()))
             throw new IllegalArgumentException("Start date cannot be in the past.");
@@ -61,9 +55,6 @@ public class CarBookingService {
     public CarBooking cancelBooking(UUID bookingId) {
         CarBooking carBooking = carBookingDao.getBookingById(bookingId);
 
-        if (carBooking == null)
-            throw new BookingNotFoundException(bookingId);
-
         if (carBooking.getBookingStatus() == BookingStatus.CANCELED)
             throw new IllegalStateException("Booking with Id " + bookingId + " is already cancelled.");
 
@@ -73,12 +64,6 @@ public class CarBookingService {
     }
 
     public List<CarBooking> getUserBookings(UUID userId) {
-        User user = userDao.getUserById(userId);
-
-        if (user == null) {
-            throw new UserNotFoundException(userId);
-        }
-
         return carBookingDao.getBookingsByUserId(userId);
     }
 

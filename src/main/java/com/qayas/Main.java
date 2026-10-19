@@ -22,7 +22,7 @@ import java.util.UUID;
 public class Main {
     private static final CarDao carDao = new CarListDataAccessService();
     private static final UserDao userDao = new UserListDataAccessService();
-//    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("filePath");
+//    private static final CarBookingDao carBookingDao = new CarBookingFileDataAccessService("bookings.txt");
     private static final CarBookingDao carBookingDao = new CarBookingListDataAccessService();
     private static final CarService carService = new CarService(carBookingDao, carDao);
     private static final UserService userService = new UserService(userDao);
