@@ -1,5 +1,7 @@
 package com.qayas.user;
 
+import com.qayas.Exceptions.UserNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +19,9 @@ public class UserListDataAccessService implements UserDao {
     }
 
     public User getUserById(UUID userId) {
-        for (User user : users) {
-            if (user.getId().equals(userId))
-                return user;
-        }
-        return null;
+        return users.stream()
+                .filter(user -> user.getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 }

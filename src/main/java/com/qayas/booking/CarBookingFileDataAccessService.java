@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CarBookingFileDataAccessService implements CarBookingDao {
     private final String filePath;
@@ -21,40 +23,24 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
 
     @Override
     public CarBooking getBookingById(UUID bookingId) {
-        for (CarBooking booking : getBookingsFromFile()) {
-            if (booking.getId().equals(bookingId))
-                return booking;
-        }
-
-        throw new BookingNotFoundException(bookingId);
+        return getBookingsFromFile().stream()
+                .filter(booking -> booking.getId().equals(bookingId))
+                .findFirst()
+                .orElseThrow(() -> new BookingNotFoundException(bookingId));
     }
 
     @Override
     public List<CarBooking> getBookingsByUserId(UUID userId) {
-        List<CarBooking> carBookings = getBookingsFromFile();
-
-        List<CarBooking> userBookings = new ArrayList<>();
-
-        for (CarBooking booking : carBookings) {
-            if (booking.getUser().getId().equals(userId))
-                userBookings.add(booking);
-        }
-
-        return userBookings;
+        return getBookingsFromFile().stream()
+                .filter(booking -> booking.getUser().getId().equals(userId))
+                .toList();
     }
 
     @Override
-    public List<CarBooking>  getActiveBookings() {
-        List<CarBooking> carBookings = getBookingsFromFile();
-
-        List<CarBooking> activeBookings = new ArrayList<>();
-
-        for (CarBooking booking : carBookings) {
-            if (booking.getBookingStatus() == BookingStatus.ACTIVE)
-                activeBookings.add(booking);
-        }
-
-        return activeBookings;
+    public List<CarBooking> getActiveBookings() {
+        return getBookingsFromFile().stream()
+                .filter(booking -> booking.getBookingStatus() == BookingStatus.ACTIVE)
+                .toList();
     }
 
     @Override
@@ -68,15 +54,15 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     public CarBooking updateBooking(CarBooking updatedBooking) {
         List<CarBooking> carBookings = getBookingsFromFile();
 
-        for (int i = 0; i < carBookings.size(); i++) {
-            if (carBookings.get(i).getId().equals(updatedBooking.getId())) {
-                carBookings.set(i, updatedBooking);
-                saveBookingsToFile(carBookings);
-                return updatedBooking;
-            }
-        }
+        int index = IntStream.range(0, carBookings.size())
+                .filter(i -> carBookings.get(i).getId().equals(updatedBooking.getId()))
+                .findFirst()
+                .orElseThrow(() -> new BookingNotFoundException(updatedBooking.getId()));
 
-        throw new BookingNotFoundException(updatedBooking.getId());
+        carBookings.set(index, updatedBooking);
+
+        saveBookingsToFile(carBookings);
+        return updatedBooking;
     }
 
     private void saveBookingToFile(CarBooking booking) {
@@ -99,7 +85,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
             return (List<CarBooking>) in.readObject();
         } catch (FileNotFoundException e) {
-          return new ArrayList<>();
+            return new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
